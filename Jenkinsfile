@@ -9,13 +9,10 @@ properties([
 docker.image('cloudbees/java-build-tools:1.0.0').inside {
 
     checkout scm
-    def mavenSettingsFile = "${pwd()}/.m2/settings.xml"
 
     stage 'Build Web App'
-    wrap([$class: 'ConfigFileBuildWrapper',
-        managedFiles: [[fileId: 'maven-settings-for-gameoflife', targetLocation: "${mavenSettingsFile}"]]]) {
-
-        sh "mvn -s ${mavenSettingsFile} clean source:jar javadoc:javadoc checkstyle:checkstyle pmd:pmd findbugs:findbugs package"
+    withMaven(mavenSettingsConfig: 'maven-settings-for-gameoflife') {
+        sh "mvn clean source:jar javadoc:javadoc checkstyle:checkstyle pmd:pmd findbugs:findbugs package"
 
         step([$class: 'ArtifactArchiver', artifacts: 'gameoflife-web/target/*.war'])
         step([$class: 'WarningsPublisher', consoleParsers: [[parserName: 'Maven']]])
