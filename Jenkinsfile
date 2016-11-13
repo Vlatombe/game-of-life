@@ -10,7 +10,7 @@ docker.image('cloudbees/java-build-tools:1.0.0').inside {
 
     checkout scm
 
-    stage 'Build Web App' {
+    stage('Build Web App') {
         withMaven(mavenSettingsConfig: 'maven-settings-for-gameoflife') {
             sh "mvn clean source:jar javadoc:javadoc checkstyle:checkstyle pmd:pmd findbugs:findbugs package"
 
